@@ -34,6 +34,10 @@ String Temperature::getMessage()
   
   return msg;
 }
+void Temperature::setup()
+{
+  dht.begin();
+}
 float Temperature::readTemperature()
 {
   return dht.readTemperature();

@@ -9,6 +9,7 @@ class Temperature
    float readTemperature();
    float readHumidity();
    String getMessage();
+   void setup();
 
  private:
   DHT dht;
