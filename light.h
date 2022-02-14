@@ -1,8 +1,9 @@
 #ifndef LIGHT_H
 #define LIGHT_H
 #include <DHT.h>
+#include "sensor.h"
 
-class Light
+class Light: public Sensor
 {
   public:
    Light(uint8_t lightPin, uint8_t buttonPin, String id);

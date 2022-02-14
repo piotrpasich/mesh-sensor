@@ -46,3 +46,7 @@ float Temperature::readHumidity()
 {
   return dht.readHumidity();
 }
+
+void Temperature::execute(String name) {}
+void Temperature::interrupt() {}
+uint8_t Temperature::getInterruptPin() { return D6; }

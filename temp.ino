@@ -2,6 +2,7 @@
 #include "temperature.h"
 #include "env.h"
 #include "light.h"
+#include "sensor.h"
 #include <ArduinoJson.h>
 
 #define DHT_PIN     D8
@@ -15,15 +16,16 @@ painlessMesh  mesh;
 
 //DHT dht(DHT_PIN, DHT_TYPE);
 //Temperature temperature(DHT_PIN, DHT_TYPE, ID);
-Light light(LIGHT_PIN, BUTTON_PIN, ID);
+//Light light(LIGHT_PIN, BUTTON_PIN, ID);
+Sensor* sensor = new Light(LIGHT_PIN, BUTTON_PIN, ID);
 
 void sendMessage() ;
 
 Task taskSendMessage( TASK_SECOND * 10 , TASK_FOREVER, &sendMessage );
 
 void sendMessage() {
-//  String msg = temperature.getMessage();
-  String msg = light.getMessage();
+  String msg = sensor->getMessage();
+  Serial.println("----");
   Serial.printf("Send Message %s", msg.c_str());  
   mesh.sendBroadcast( msg );  
   taskSendMessage.setInterval( random( TASK_SECOND * 10, TASK_SECOND * 50 ));  
@@ -56,7 +58,7 @@ void receivedCallback( uint32_t from, String &msg ) {
     return;
   }
 
-  light.execute(sAction);
+  sensor->execute(sAction);
 }
 
 void newConnectionCallback(uint32_t nodeId) {
@@ -73,7 +75,7 @@ void nodeTimeAdjustedCallback(int32_t offset) {
 
 void ICACHE_RAM_ATTR interrupt ()
 {
-  light.interrupt();
+  sensor->interrupt();
   sendMessage();
 }
 
@@ -92,9 +94,8 @@ void setup() {
   userScheduler.addTask( taskSendMessage );
   taskSendMessage.enable();
   //temperature.setup();
-  light.setup();
-  //light.on();
-  attachInterrupt(digitalPinToInterrupt(light.getInterruptPin()), interrupt, FALLING);
+  sensor->setup();
+  attachInterrupt(digitalPinToInterrupt(sensor->getInterruptPin()), interrupt, FALLING);
   digitalWrite(BUILTIN_LED, LOW);
 }
 
